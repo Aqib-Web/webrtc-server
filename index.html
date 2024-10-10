@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebRTC Video Streaming</title>
+  </head>
+  <body>
+    <h1>WebRTC Video Streaming</h1>
+    <!-- Local video to be streamed -->
+    <video id="localVideo" autoplay playsinline controls muted>
+      <source src="earth.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+
+    <!-- Script dependencies -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
