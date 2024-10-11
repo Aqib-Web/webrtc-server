@@ -3,18 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebRTC Video Streaming</title>
+    <title>Admin - WebRTC Video Streaming</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
+    />
   </head>
   <body>
-    <h1>WebRTC Video Streaming</h1>
-    <!-- Local video to be streamed -->
-    <video id="localVideo" autoplay playsinline controls muted>
-      <source src="earth.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
+    <h1>Admin Panel</h1>
+    <label for="videoSelect">Select Video:</label>
+    <select id="videoSelect">
+      <option value="" selected>Select video</option>
+      <option value="./assets/earth.mp4" selected>earth.mp4</option>
+      <option value="./assets/fish.mp4">fish.mp4</option>
+      <option value="./assets/research.mp4">research.mp4</option>
+    </select>
+    <br /><br />
+    <button id="startBtn">Start Streaming</button>
+    <p id="status"></p>
+    <br /><br />
+    <a href="./client.html" target="_blank">Go the Client View</a>
 
     <!-- Script dependencies -->
     <script src="/socket.io/socket.io.js"></script>
-    <script src="app.js"></script>
+    <script>
+      const socket = io();
+      const startBtn = document.getElementById("startBtn");
+      const videoSelect = document.getElementById("videoSelect");
+      const status = document.getElementById("status");
+
+      let isStreaming = false;
+
+      // Handle the start/stop button click
+      startBtn.addEventListener("click", () => {
+        if (videoSelect.value !== "null") {
+          if (!isStreaming) {
+            const selectedVideo = videoSelect.value;
+            socket.emit("start-stream", selectedVideo);
+            status.textContent = `Streaming started with ${selectedVideo}`;
+            startBtn.textContent = "Stop Streaming";
+          } else {
+            socket.emit("stop-stream");
+            status.textContent = "Streaming stopped";
+            startBtn.textContent = "Start Streaming";
+          }
+          isStreaming = !isStreaming;
+        }
+      });
+
+      // Listen for stream stop event
+      socket.on("stream-stopped", () => {
+        status.textContent = "Streaming stopped.";
+        startBtn.textContent = "Start Streaming";
+        isStreaming = false;
+      });
+    </script>
   </body>
 </html>

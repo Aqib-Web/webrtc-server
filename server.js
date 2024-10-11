@@ -7,36 +7,41 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Serve static files (html, video, js)
+// Serve static files for admin and client UIs
 app.use(express.static(__dirname));
 
-// Serve the index.html file
+// Serve admin UI
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// WebRTC signaling (using socket.io)
+// Serve client UI
+app.get("/client", (req, res) => {
+  res.sendFile(path.join(__dirname, "client.html"));
+});
+
+// Handle socket communication
 io.on("connection", (socket) => {
   console.log("A user connected");
 
-  // Forward offer to clients
-  socket.on("offer", (offer) => {
-    socket.broadcast.emit("offer", offer);
+  // Handle admin starting the stream
+  socket.on("start-stream", (videoSource) => {
+    // Broadcast to all clients that the stream has started
+    io.emit("start-stream", videoSource);
   });
 
-  // Forward answer to host
-  socket.on("answer", (answer) => {
-    socket.broadcast.emit("answer", answer);
+  // Handle admin stopping the stream
+  socket.on("stop-stream", () => {
+    io.emit("stream-stopped");
   });
 
-  // Forward ICE candidates between peers
-  socket.on("ice-candidate", (candidate) => {
-    socket.broadcast.emit("ice-candidate", candidate);
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
   });
 });
 
 // Start the server
 const PORT = 3000;
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

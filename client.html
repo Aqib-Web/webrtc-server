@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Client - WebRTC Video Streaming</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
+    />
+  </head>
+  <body>
+    <h1>Client View</h1>
+    <p id="status">No stream available...</p>
+    <video
+      height="480"
+      id="clientVideo"
+      controls
+      autoplay
+      playsinline
+      hidden
+    ></video>
+
+    <!-- Script dependencies -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="./client.js"></script> -->
+    <script>
+      const socket = io();
+      const clientVideo = document.getElementById("clientVideo");
+      const status = document.getElementById("status");
+
+      // When stream starts, show the video
+      socket.on("start-stream", (videoSource) => {
+        clientVideo.src = videoSource;
+        clientVideo.hidden = false;
+        status.textContent = "Streaming started...";
+      });
+
+      // When stream stops, hide the video
+      socket.on("stream-stopped", () => {
+        clientVideo.hidden = true;
+        status.textContent = "No stream available...";
+      });
+    </script>
+  </body>
+</html>
