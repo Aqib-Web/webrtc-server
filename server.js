@@ -23,7 +23,7 @@ app.get("/client", (req, res) => {
 // Handle socket communication
 io.on("connection", (socket) => {
   console.log("A user connected");
-
+  io.emit("connected");
   // Handle admin starting the stream
   socket.on("start-stream", (videoSource) => {
     // Broadcast to all clients that the stream has started

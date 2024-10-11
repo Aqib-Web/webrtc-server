@@ -4,25 +4,60 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin - WebRTC Video Streaming</title>
-    <link
+    <!-- <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
-    />
+    /> -->
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
-    <h1>Admin Panel</h1>
-    <label for="videoSelect">Select Video:</label>
-    <select id="videoSelect">
-      <option value="" selected>Select video</option>
-      <option value="./assets/earth.mp4" selected>earth.mp4</option>
-      <option value="./assets/fish.mp4">fish.mp4</option>
-      <option value="./assets/research.mp4">research.mp4</option>
-    </select>
-    <br /><br />
-    <button id="startBtn">Start Streaming</button>
-    <p id="status"></p>
-    <br /><br />
-    <a href="./client.html" target="_blank">Go the Client View</a>
+    <div class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+      <div class="bg-white shadow-lg rounded-lg p-6 max-w-md w-full">
+        <h1 class="text-2xl font-bold text-center mb-4">Admin View</h1>
+
+        <label
+          for="videoSelect"
+          class="block text-sm font-medium text-gray-700 mb-2"
+          >Select Video:</label
+        >
+        <select
+          id="videoSelect"
+          class="block w-full p-2 border border-gray-300 rounded-md mb-4"
+        >
+          <option value="" selected>Select video</option>
+          <option value="./assets/earth.mp4">earth.mp4</option>
+          <option value="./assets/fish.mp4">fish.mp4</option>
+          <option value="./assets/research.mp4">research.mp4</option>
+        </select>
+
+        <button
+          id="startBtn"
+          class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200"
+        >
+          Start Streaming
+        </button>
+
+        <p id="status" class="mt-4 text-center text-gray-600"></p>
+
+        <div class="mt-4 text-center">
+          <a
+              href="./client.html"
+              target="_blank"
+              class="inline-block bg-slate-500 text-white py-2 px-4 rounded-md hover:bg-slate-600 transition duration-200"
+          >
+              👉 Go to Client View
+          </a>
+      </div>
+      
+        <div class="mt-4 text-sm text-gray-500">
+          <p>
+            <b>Note: </b>For running first time: 
+            <p>1) Open Client page  </p>
+            <p>2) Then, comeback & start stream</p>
+          </p>
+        </div>
+      </div>
+    </div>
 
     <!-- Script dependencies -->
     <script src="/socket.io/socket.io.js"></script>
@@ -34,28 +69,47 @@
 
       let isStreaming = false;
 
-      // Handle the start/stop button click
       startBtn.addEventListener("click", () => {
-        if (videoSelect.value !== "null") {
+        if (videoSelect.value !== "") {
           if (!isStreaming) {
             const selectedVideo = videoSelect.value;
             socket.emit("start-stream", selectedVideo);
-            status.textContent = `Streaming started with ${selectedVideo}`;
+            status.textContent = `🟢 Streaming started with ${selectedVideo}`;
             startBtn.textContent = "Stop Streaming";
           } else {
             socket.emit("stop-stream");
-            status.textContent = "Streaming stopped";
+            status.textContent = "🟢 Streaming stopped";
             startBtn.textContent = "Start Streaming";
           }
           isStreaming = !isStreaming;
         }
       });
 
+      videoSelect.addEventListener("change", () => {
+        if (videoSelect.value !== "" && isStreaming) {
+          const selectedVideo = videoSelect.value;
+          socket.emit("start-stream", selectedVideo);
+          status.textContent = `🟢 Streaming started with ${selectedVideo}`;
+          console.log("Source Changed");
+        }
+      });
+
       // Listen for stream stop event
       socket.on("stream-stopped", () => {
-        status.textContent = "Streaming stopped.";
+        status.textContent = "🔴 Streaming stopped.";
         startBtn.textContent = "Start Streaming";
         isStreaming = false;
+      });
+
+      socket.on("start-stream", () => {
+        console.log("🟢 Stream Started");
+      });
+      socket.on("stream-stopped", () => {
+        console.log("🔴 Stream Stopped");
+      });
+
+      socket.on("connected", () => {
+        console.log("🔵 A user is connected");
       });
     </script>
   </body>

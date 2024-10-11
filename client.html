@@ -10,16 +10,25 @@
     />
   </head>
   <body>
-    <h1>Client View</h1>
-    <p id="status">No stream available...</p>
-    <video
-      height="480"
-      id="clientVideo"
-      controls
-      autoplay
-      playsinline
-      hidden
-    ></video>
+    <div class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+      <div
+        class="bg-white shadow-lg rounded-lg p-6 max-w-md w-full text-center"
+      >
+        <h1 class="text-2xl font-bold mb-4">Client View</h1>
+
+        <p id="status" class="text-gray-600 mb-4">No stream available...</p>
+
+        <video
+          id="clientVideo"
+          controls
+          autoplay
+          playsinline
+          hidden
+          class="w-full rounded-md shadow-md"
+          height="480"
+        ></video>
+      </div>
+    </div>
 
     <!-- Script dependencies -->
     <script src="/socket.io/socket.io.js"></script>
